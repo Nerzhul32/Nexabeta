@@ -116,19 +116,35 @@ const NexaCore = {
   IDLE_AFTER: 10_000,
   SLEEP_AFTER: 60_000,
   message: "Zzz....",
+  effect: "z Z",
+  lastHappyMessage: null,
 
   say: {
     sleeping: "Zzz....",
     idle: "Cualquier cosa, me avisas.",
     awake: "Estoy atento. ¿Qué hacemos?",
-    thinking: "Hmm... déjame pensar.",
-    happy: ["¡Aquí estoy!", "¡Qué bueno verte!", "Todo en orden!", "Listo para lo que necesites."],
+    thinking: ["Hmm... déjame pensar.", "Un segundo, estoy ordenando mis tentáculos...", "A ver... ya casi lo tengo."],
+    happy: [
+      "¡Aquí estoy! ¿Qué hacemos?",
+      "¡Qué bueno verte por aquí!",
+      "¡Listo! Tentáculos a la obra.",
+      "Todo en orden por el fondo del mar.",
+      "¡Je! Esa interacción me animó.",
+      "Cuéntame, ¿qué necesitas?",
+    ],
+  },
+  effects: {
+    sleeping: ["z Z"],
+    awake: ["✦", "♪", "¡"],
+    thinking: ["...", "?", "✧"],
+    happy: ["♥", "✦", "♪", "★", "♡", "!"],
+    alert: ["!"],
   },
 
   onChange(fn) {
     if (typeof fn !== "function") throw new TypeError("El listener debe ser una función.");
     this.listeners.push(fn);
-    fn(this.state, this.message);
+    fn(this.state, this.message, this.effect);
   },
   set(state, message, meta = {}) {
     if (!this.STATES.includes(state)) {
@@ -137,12 +153,22 @@ const NexaCore = {
     if (meta.action !== undefined) this.context.lastAction = meta.action;
 
     this.state = state;
-    this.message = message ?? (
-      Array.isArray(this.say[state])
-        ? this.say[state][Math.floor(Math.random() * this.say[state].length)]
-        : this.say[state]
-    );
-    this.listeners.forEach(fn => fn(this.state, this.message));
+    const messages = this.say[state];
+    if (message !== undefined) {
+      this.message = message;
+    } else if (Array.isArray(messages)) {
+      const choices = state === "happy"
+        ? messages.filter(item => item !== this.lastHappyMessage)
+        : messages;
+      this.message = choices[Math.floor(Math.random() * choices.length)];
+    } else {
+      this.message = messages;
+    }
+    if (state === "happy") this.lastHappyMessage = this.message;
+
+    const effects = this.effects[state] || [""];
+    this.effect = effects[Math.floor(Math.random() * effects.length)];
+    this.listeners.forEach(fn => fn(this.state, this.message, this.effect));
     this.scheduleRest();
   },
   getState() {
@@ -179,7 +205,8 @@ const NexaCore = {
 
     this.set("thinking", undefined, { action: "user_interaction" });
     // AIService can replace this simulated response in a future phase.
-    this.timers.think = setTimeout(() => this.set("happy"), 1200);
+    const responseDelay = 800 + Math.random() * 1000;
+    this.timers.think = setTimeout(() => this.set("happy"), responseDelay);
   },
   getWeather() {
     return WeatherService.get();
@@ -230,11 +257,11 @@ const $ = id => document.getElementById(id);
 const fmtWhen = ts => new Date(ts).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const KRAKEN_FX = { sleeping: "z Z", thinking: "...", alert: "!", happy: "♥" };
 
-function renderState(state, text) {
+function renderState(state, text, effect) {
   $("kraken").dataset.state = state;
   $("stateLabel").textContent = state;
   $("bubble").textContent = text;
-  $("fx").textContent = KRAKEN_FX[state] || "";
+  $("fx").textContent = effect || KRAKEN_FX[state] || "";
 }
 
 function renderClock() {
