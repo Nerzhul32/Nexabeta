@@ -35,11 +35,16 @@ body::after{ /* scanlines */
   filter:drop-shadow(0 0 22px rgba(199,125,255,.35));transform-origin:50% 90%}
 .shadow{height:10px;width:55%;margin:6px auto 0;border-radius:50%;background:rgba(199,125,255,.15);filter:blur(4px)}
 .fx{
-  position:absolute;top:-1.75em;left:50%;z-index:1;transform:translateX(-50%);
-  display:grid;place-items:center;min-width:2em;min-height:1.7em;padding:.1em .35em;
-  border:1px solid var(--line);background:var(--panel);box-shadow:2px 2px 0 #031116;
-  font-size:clamp(1rem,4vh,1.6rem);font-weight:700;color:var(--glow);
-  pointer-events:none;animation:effect-float 1.5s ease-in-out infinite alternate
+  position:absolute;top:20%;right:-.15em;z-index:1;
+  color:var(--glow);font-size:clamp(1.25rem,5vw,2.2rem);font-weight:700;line-height:1;
+  text-shadow:0 0 10px rgba(142,216,198,.55),0 0 22px rgba(142,216,198,.3);
+  pointer-events:none;animation:effect-float 1.8s ease-in-out infinite alternate
+}
+.fx::after{
+  content:"\2727";position:absolute;top:.9em;right:1.35em;
+  color:var(--sand);font-size:.48em;
+  text-shadow:0 0 8px rgba(232,201,144,.5);
+  animation:effect-sparkle 1.8s ease-in-out infinite alternate
 }
 .status{font-size:.72rem;color:var(--sand)}
 .status b{color:var(--glow);font-weight:400}
@@ -57,8 +62,9 @@ body::after{ /* scanlines */
 @keyframes breathe{50%{transform:scale(1.02,.98)}}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes blink{50%{opacity:0}}
-@keyframes effect-float{to{translate:0 -4px}}
-@media (prefers-reduced-motion:reduce){.kraken,.logo i,.fx{animation:none!important}}
+@keyframes effect-float{to{transform:translate(5px,-8px) rotate(8deg)}}
+@keyframes effect-sparkle{to{transform:translate(-3px,-5px) scale(.75);opacity:.45}}
+@media (prefers-reduced-motion:reduce){.kraken,.logo i,.fx,.fx::after{animation:none!important}}
 
 .btn{font:inherit;color:var(--text);background:var(--panel);border:2px solid var(--purple);
   padding:10px 16px;cursor:pointer;box-shadow:3px 3px 0 #031116}
