@@ -8,7 +8,6 @@ const KRAKEN_FX = { sleeping: "z Z", thinking: "...", alert: "!", happy: "♥" }
 
 function renderState(state, text, effect) {
   $("kraken").dataset.state = state;
-  $("stateLabel").textContent = state;
   $("bubble").textContent = text;
   $("fx").textContent = effect || KRAKEN_FX[state] || "";
 }
@@ -125,6 +124,7 @@ function init() {
 
   renderClock();
   renderReminders();
+  NexaCore.start();
   refreshWeather();
   setInterval(() => {
     renderClock();

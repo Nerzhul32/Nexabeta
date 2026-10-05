@@ -1,22 +1,41 @@
-# Arquitectura v0.1
+# Arquitectura de Nexa Web
 
-La aplicación usa JavaScript plano con módulos ES nativos del navegador; no requiere framework, bundler ni backend.
+La aplicación usa JavaScript plano y módulos ES del navegador; no requiere framework, bundler, backend ni conexión a un modelo de IA.
 
 ```text
-Nexa Web (app.js: UI)
-        ↓
-NexaCore (core/NexaCore.js: estado y comportamiento)
-        ↓
-Services (services/: integraciones actuales)
+app.js (UI)
+   ↓
+NexaCore → ContextEngine → MoodEngine → BehaviorEngine → ResponseEngine
+   ↑                                                        │
+   └────────────────────────────────────────────────────────┘
+   └────────── WeatherService / ReminderService ────────────┘
 ```
 
-- **Web / UI — `app.js`:** conecta eventos de usuario, renderiza el estado, reloj, clima y recordatorios. Importa `NexaCore` y no utiliza los Services directamente.
-- **NexaCore — `core/NexaCore.js`:** mantiene los estados `idle`, `awake`, `thinking`, `happy`, `sleeping` y `alert`, contexto, listeners y timers. Coordina las reacciones y las llamadas a servicios; no depende del DOM. `getState()` devuelve una copia y `onChange()` notifica a la UI.
-- **WeatherService — `services/WeatherService.js`:** ofrece `get()` y `setProvider()`. El proveedor activo es Open-Meteo; también existe `MockWeatherProvider`. La consulta utiliza geolocalización del navegador cuando está disponible y Villarrica como fallback si no lo está o si se deniega el permiso.
-- **ReminderService — `services/ReminderService.js`:** valida y persiste recordatorios en `localStorage["nexa.reminders.v1"]`; también lista, elimina y detecta los vencidos. La alerta de un vencimiento se coordina a través de NexaCore.
+- **UI — `app.js`:** conecta controles, renderiza el estado, reloj, clima y recordatorios. Solo consume NexaCore; no importa los servicios ni los motores.
+- **NexaCore — `core/NexaCore.js`:** coordina eventos, timers, estado visual, mood, persistencia y servicios. No accede al DOM. Mantiene los estados operativos `idle`, `awake`, `thinking`, `happy`, `sleeping` y `alert`; el mood es una dimensión independiente (`happy`, `curious`, `sleepy`, `bored`, `excited`, `annoyed`, `concerned`).
+- **ContextEngine — `core/ContextEngine.js`:** construye una instantánea contextual con hora, minuto, día, periodo, madrugada, tiempo e interacciones recientes, última acción, state/mood actuales, clima, recordatorios próximos y cantidad pendiente.
+- **MoodEngine — `core/MoodEngine.js`:** propone cambios de ánimo a partir de eventos y contexto. Aplica un cooldown para evitar oscilaciones, con prioridad para eventos importantes como recordatorios.
+- **BehaviorEngine — `core/BehaviorEngine.js`:** elige un comportamiento por evento y contexto; distingue regresos, primera interacción del día, secuencias de pulsaciones, sueño, ánimo, hora, clima y recordatorios.
+- **ResponseEngine — `core/ResponseEngine.js`:** elige entre respuestas breves en español para cada comportamiento y evita repetir inmediatamente una respuesta.
+- **WeatherService — `services/WeatherService.js`:** conserva Open-Meteo, su proveedor de prueba y el uso de geolocalización. Si la ubicación no está disponible o se deniega el permiso, usa Villarrica como referencia.
+- **ReminderService — `services/ReminderService.js`:** conserva la validación y persistencia en `localStorage["nexa.reminders.v1"]`, la lista, eliminación y vencimientos.
 
-La interfaz meteorológica muestra las condiciones actuales, humedad, viento y hora de actualización. Se actualiza al cargar, manualmente y cada 15 minutos. Los datos provienen de Open-Meteo, con atribución visible en la UI; antes de cualquier uso comercial se deben revisar los términos del proveedor y la licencia aplicable.
+## Flujo de comportamiento
 
-La interacción sigue siendo simulada y puede reaccionar al último clima cargado; no hay integración de IA. La inactividad lleva `awake → idle` después de 10 segundos y `idle → sleeping` después de 60 segundos. No se evalúan los recordatorios cuando la página está cerrada.
+```text
+evento → contexto → mood → comportamiento → respuesta → state/effect → UI
+```
+
+Los eventos de usuario pasan por `NexaCore.interact()`. Las actualizaciones de clima y recordatorios también llegan al núcleo desde sus servicios; los motores reciben datos y no conocen el DOM. Mood describe la personalidad y no sustituye el state que controla las animaciones existentes.
+
+La actividad se cuenta en una ventana corta para modular interacciones consecutivas. La inactividad se evalúa en tramos corto, medio y largo; puede cambiar el mood y, con probabilidad baja y cooldown, producir un mensaje espontáneo. Las respuestas y reacciones al clima también respetan cooldowns. Los cambios de periodo actualizan el mood sin interrumpir al usuario.
+
+Los recordatorios vencidos mantienen el state `alert`; los próximos se anuncian una sola vez por recordatorio cuando entran en la ventana de 15 minutos. La app no puede evaluar recordatorios mientras está cerrada.
+
+## Persistencia y compatibilidad
+
+`NexaCore` guarda en `localStorage["nexa.personality.v1"]` datos pequeños de actividad, mood y última respuesta para conservar continuidad sin almacenar conversaciones. Los recordatorios siguen en su propia clave y servicio. La interfaz, los estados/animaciones, clima Open-Meteo, fallback de Villarrica y diseño responsive se mantienen.
+
+El clima se muestra y actualiza al cargar, manualmente y cada 15 minutos. Las reacciones contextuales no se emiten en cada consulta: dependen de cambios, probabilidad y cooldown. La atribución de Open-Meteo permanece visible; antes de cualquier uso comercial se deben revisar sus términos y licencia.
 
 La app debe servirse por HTTP/HTTPS para que el navegador resuelva los imports ES; abrir `index.html` directamente mediante `file://` no es compatible de forma consistente con módulos.
