@@ -468,14 +468,13 @@ function renderWeather(weather) {
   $("wxWind").textContent = !Number.isFinite(weather.wind)
     ? "viento --"
     : `viento ${weather.wind} ${weather.windUnit}`;
-  const location = weather.locationSource === "device"
-    ? "Ubicación del teléfono"
-    : "Villarrica · ubicación de referencia";
   const updated = new Date(weather.updatedAt).toLocaleTimeString("es-CL", {
     hour: "2-digit",
     minute: "2-digit",
   });
-  $("wxStatus").textContent = `${location} · actualizado ${updated}`;
+  $("wxStatus").textContent = weather.locationSource === "device"
+    ? `GPS → Open-Meteo · ${updated}`
+    : `Villarrica · referencia · ${updated}`;
 }
 
 async function refreshWeather() {
