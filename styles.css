@@ -30,7 +30,7 @@ body::after{ /* scanlines */
 .bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:10px;height:10px;
   background:var(--panel);border-right:2px solid var(--line);border-bottom:2px solid var(--line);
   transform:translateX(-50%) rotate(45deg)}
-.kraken-wrap{position:relative;width:min(78vw,340px);margin-top:8px}
+.kraken-wrap{position:relative;width:min(78vw,340px);margin-top:0}
 .kraken{width:100%;display:block;image-rendering:pixelated;user-select:none;cursor:pointer;
   filter:drop-shadow(0 0 22px rgba(199,125,255,.35));transform-origin:50% 90%}
 .shadow{height:10px;width:55%;margin:6px auto 0;border-radius:50%;background:rgba(199,125,255,.15);filter:blur(4px)}
@@ -121,7 +121,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
 .topbar{grid-area:topbar}
 .stage{grid-area:stage;min-height:0;padding:0;gap:clamp(4px,1vh,10px);justify-content:center}
 .bubble{min-height:0;padding:8px 12px;font-size:clamp(.72rem,3.4vw,.9rem)}
-.kraken-wrap{width:min(46vw,32dvh,280px);margin-top:clamp(2.4em,5vh,2.8em)}
+.kraken-wrap{width:min(46vw,32dvh,280px);margin-top:0}
 .status{font-size:clamp(.62rem,2.8vw,.72rem)}
 .btn{padding:8px 12px;font-size:clamp(.72rem,3.2vw,.9rem)}
 .btn.primary{padding:9px 18px;font-size:clamp(.75rem,3.4vw,.95rem)}
@@ -155,7 +155,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
   }
   .stage{gap:clamp(10px,2vh,18px)}
   .bubble{padding:12px 18px;font-size:1rem}
-  .kraken-wrap{width:clamp(260px,min(34vw,52dvh),440px);margin-top:clamp(2.4em,5vh,2.8em)}
+  .kraken-wrap{width:clamp(260px,min(34vw,52dvh),440px);margin-top:0}
   .status{font-size:.8rem}
   .btn{font-size:.9rem;padding:10px 16px}
   .btn.primary{font-size:1rem;padding:12px 26px}
@@ -178,7 +178,7 @@ body{height:100vh;height:100dvh;overflow:hidden}
     grid-template-rows:auto minmax(0,1fr);
     grid-template-areas:"topbar topbar topbar topbar" "stage clock weather reminders";
   }
-  .kraken-wrap{width:min(26vw,48dvh,230px);margin-top:clamp(2.4em,5vh,2.8em)}
+  .kraken-wrap{width:min(26vw,48dvh,230px);margin-top:0}
   .time{font-size:clamp(1.4rem,5vw,2.2rem)}
   .wx-row{flex-wrap:wrap;gap:4px}
   #reminderForm{grid-template-columns:minmax(0,1fr)}
@@ -187,12 +187,12 @@ body{height:100vh;height:100dvh;overflow:hidden}
 
 @media (max-height:650px){
   .nexa{gap:clamp(5px,1.2vh,8px);padding-top:8px;padding-bottom:8px}
-  .kraken-wrap{width:min(42vw,27dvh,220px);margin-top:clamp(2.4em,5vh,2.8em)}
+  .kraken-wrap{width:min(36vw,22dvh,180px);margin-top:0}
   .bubble{padding:6px 10px}
   .panel{padding:8px}
   .time{font-size:clamp(1.3rem,6vh,2rem)}
 }
 
 @media (max-width:900px) and (orientation:landscape) and (max-height:650px){
-  .kraken-wrap{width:min(26vw,48dvh,230px);margin-top:clamp(2.4em,5vh,2.8em)}
+  .kraken-wrap{width:min(26vw,48dvh,230px);margin-top:0}
 }

@@ -279,6 +279,8 @@ const NexaCore = {
       throw new RangeError(`Estado de Nexa no válido: ${state}`);
     }
     clearTimeout(this.timers.weatherReaction);
+    clearTimeout(this.timers.think);
+    this.timers.think = null;
     if (meta.action !== undefined) this.context.lastAction = meta.action;
 
     this.state = state;
@@ -384,6 +386,7 @@ const NexaCore = {
     this.set("thinking", undefined, { action: "user_interaction" });
     const responseDelay = 800 + Math.random() * 1000;
     this.timers.think = setTimeout(() => {
+      this.timers.think = null;
       if (this.weather) {
         const reaction = this.weatherReaction(this.weather);
         this.set(reaction.state, reaction.message, { action: "weather_interaction" });
