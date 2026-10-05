@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0a0612">
+<title>Nexa</title>
+<link rel="icon" href="assets/kraken.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="nexa">
+  <header class="topbar">
+    <span class="logo">NEXA<i>_</i></span>
+    <span class="version">v0.1</span>
+  </header>
+
+  <section class="stage">
+    <div class="bubble" id="bubble" aria-live="polite">Estoy descansando.</div>
+    <div class="kraken-wrap">
+      <div class="fx" id="fx"></div>
+      <img id="kraken" class="kraken" data-state="idle" src="assets/kraken.png" alt="Nexa, el Kraken morado" draggable="false">
+      <div class="shadow"></div>
+    </div>
+    <div class="status">estado: <b id="stateLabel">idle</b></div>
+    <button class="btn primary" id="interactBtn" type="button">[ Interactuar ]</button>
+  </section>
+
+  <section class="panel clock">
+    <div class="time" id="time">--:--</div>
+    <div class="date" id="date">&nbsp;</div>
+  </section>
+
+  <section class="panel weather">
+    <div class="label">clima</div>
+    <div class="wx-row">
+      <span class="wx-temp" id="wxTemp">--°C</span>
+      <span class="wx-info"><span id="wxCond">--</span><br><small id="wxCity">--</small></span>
+    </div>
+  </section>
+
+  <section class="panel reminders">
+    <div class="label">recordatorios</div>
+    <form id="reminderForm" autocomplete="off">
+      <input id="remText" type="text" maxlength="80" placeholder="¿Qué te recuerdo?" required>
+      <input id="remWhen" type="datetime-local" required>
+      <button class="btn" type="submit">+ Añadir</button>
+    </form>
+    <ul id="remList" class="rem-list"></ul>
+  </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
