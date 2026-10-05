@@ -142,6 +142,4 @@ const WeatherService = {
   },
 };
 
-window.MockWeatherProvider = MockWeatherProvider;
-window.OpenMeteoWeatherProvider = OpenMeteoWeatherProvider;
-window.WeatherService = WeatherService;
+export { MockWeatherProvider, OpenMeteoWeatherProvider, WeatherService };

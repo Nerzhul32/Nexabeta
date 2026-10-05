@@ -1,5 +1,7 @@
 "use strict";
 
+import { NexaCore } from "./core/NexaCore.js";
+
 const $ = id => document.getElementById(id);
 const fmtWhen = ts => new Date(ts).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 const KRAKEN_FX = { sleeping: "z Z", thinking: "...", alert: "!", happy: "♥" };
@@ -41,11 +43,11 @@ async function refreshWeather() {
   const button = $("wxRefresh");
   const status = $("wxStatus");
   button.disabled = true;
-  status.textContent = window.NexaCore.getWeatherSnapshot()
+  status.textContent = NexaCore.getWeatherSnapshot()
     ? "Actualizando clima..."
     : "Consultando ubicación y clima...";
   try {
-    renderWeather(await window.NexaCore.refreshWeather());
+    renderWeather(await NexaCore.refreshWeather());
   } catch (error) {
     status.textContent = `No se pudo actualizar el clima. ${error.message}`;
     console.error("No se pudo cargar el clima.", error);
@@ -56,7 +58,7 @@ async function refreshWeather() {
 
 function renderReminders() {
   const listElement = $("remList");
-  const reminders = window.NexaCore.getReminders();
+  const reminders = NexaCore.getReminders();
   listElement.replaceChildren();
   if (!reminders.length) {
     const item = document.createElement("li");
@@ -80,7 +82,7 @@ function renderReminders() {
     remove.setAttribute("aria-label", "Eliminar recordatorio");
     remove.textContent = "✕";
     remove.onclick = () => {
-      window.NexaCore.removeReminder(reminder.id);
+      NexaCore.removeReminder(reminder.id);
       renderReminders();
     };
     item.append(info, remove);
@@ -89,13 +91,13 @@ function renderReminders() {
 }
 
 function checkReminders() {
-  if (window.NexaCore.checkReminders().length) renderReminders();
+  if (NexaCore.checkReminders().length) renderReminders();
 }
 
 function init() {
-  window.NexaCore.onChange(renderState);
-  $("interactBtn").onclick = () => window.NexaCore.interact();
-  $("kraken").onclick = () => window.NexaCore.interact();
+  NexaCore.onChange(renderState);
+  $("interactBtn").onclick = () => NexaCore.interact();
+  $("kraken").onclick = () => NexaCore.interact();
   $("wxRefresh").onclick = refreshWeather;
 
   const reminderText = $("remText");
@@ -116,7 +118,7 @@ function init() {
       reminderWhen.reportValidity();
       return;
     }
-    window.NexaCore.addReminder(text, when);
+    NexaCore.addReminder(text, when);
     event.target.reset();
     renderReminders();
   };
@@ -130,9 +132,9 @@ function init() {
   }, 1000);
   setInterval(() => {
     if (document.visibilityState === "visible") refreshWeather();
-  }, window.NexaCore.WEATHER_REFRESH_INTERVAL);
+  }, NexaCore.WEATHER_REFRESH_INTERVAL);
   window.addEventListener("focus", () => {
-    if (Date.now() - window.NexaCore.weatherRefreshAt >= window.NexaCore.WEATHER_REFRESH_INTERVAL) {
+    if (Date.now() - NexaCore.weatherRefreshAt >= NexaCore.WEATHER_REFRESH_INTERVAL) {
       refreshWeather();
     }
   });

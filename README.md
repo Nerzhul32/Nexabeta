@@ -1,9 +1,11 @@
 # Nexabeta - Nexa Web v0.1
-Primer prototipo de **Nexa**, un AI Companion (Kraken pixel-art morado) que luego será un dispositivo ESP32.
+Prototipo web interactivo de **Nexa**, representado por un Kraken pixel-art morado. La interacción es simulada; no incluye IA ni backend.
+
+**Ejecutar:** sirve la carpeta por HTTP (necesario para los módulos ES nativos): `python3 -m http.server 8000` y abre `http://localhost:8000`. Para probar en el teléfono, usa `http://IP-DEL-PC:8000`.
 
 **Incluye:** interfaz responsive (columnas en escritorio y pantalla completa en móviles/tablets, sin scroll de página), Kraken con 6 estados, reloj, clima actual de Open-Meteo basado en la ubicación del dispositivo (Villarrica como referencia si se deniega el permiso), recordatorios (localStorage) e interacción simulada. Nexa reacciona al clima y lo actualiza cada 15 minutos. Si hay muchos recordatorios, la lista se desplaza dentro de su panel.
 
-**Arquitectura actual:**
+**Arquitectura actual (módulos ES nativos, sin bundler):**
 - `services/WeatherService.js` encapsula los proveedores meteorológicos y la validación de la respuesta.
 - `services/ReminderService.js` encapsula la persistencia de recordatorios y la lógica de vencimiento.
 - `core/NexaCore.js` concentra el estado, los timers, la coordinación de servicios y la API del núcleo.

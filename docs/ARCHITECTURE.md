@@ -1,15 +1,22 @@
 # Arquitectura v0.1
-Todo vive en `app.js`, organizado en tres capas:
 
-1. **Services** — `WeatherService` delega en un proveedor reemplazable (Open-Meteo en producción; `MockWeatherProvider` para pruebas); `ReminderService` valida y persiste recordatorios en localStorage.
-2. **NexaCore** — mantiene la máquina de estados (`idle, awake, thinking, happy, sleeping, alert`), el contexto, los timers y coordina ambos servicios. No toca el DOM. `getState()` expone una copia del estado y `onChange()` notifica a la UI.
-3. **UI** — renderiza estado, reloj, clima y recordatorios. Solo llama a NexaCore; no accede directamente a los Services.
+La aplicación usa JavaScript plano con módulos ES nativos del navegador; no requiere framework, bundler ni backend.
 
-`NexaCore.version` identifica el formato del estado en memoria. Su contexto conserva la última acción, interacción y recordatorio. Los cambios de estado pasan por `NexaCore.set()`, que valida el estado y mantiene los timers de descanso.
+```text
+Nexa Web (app.js: UI)
+        ↓
+NexaCore (core/NexaCore.js: estado y comportamiento)
+        ↓
+Services (services/: integraciones actuales)
+```
 
-El proveedor meteorológico consulta las condiciones actuales de Open-Meteo sin API key. Usa geolocalización del dispositivo (permiso del navegador); si el usuario la deniega o el navegador no la ofrece, utiliza Villarrica como ubicación de referencia. Las coordenadas permitidas se envían a Open-Meteo para consultar el pronóstico. Actualiza al cargar, manualmente y cada 15 minutos. La atribución a Open-Meteo aparece junto a los datos. Su API gratuita se usa conforme a sus condiciones de uso no comercial y licencia CC BY 4.0; revisar esos términos antes de emplearla en un producto comercial.
+- **Web / UI — `app.js`:** conecta eventos de usuario, renderiza el estado, reloj, clima y recordatorios. Importa `NexaCore` y no utiliza los Services directamente.
+- **NexaCore — `core/NexaCore.js`:** mantiene los estados `idle`, `awake`, `thinking`, `happy`, `sleeping` y `alert`, contexto, listeners y timers. Coordina las reacciones y las llamadas a servicios; no depende del DOM. `getState()` devuelve una copia y `onChange()` notifica a la UI.
+- **WeatherService — `services/WeatherService.js`:** ofrece `get()` y `setProvider()`. El proveedor activo es Open-Meteo; también existe `MockWeatherProvider`. La consulta utiliza geolocalización del navegador cuando está disponible y Villarrica como fallback si no lo está o si se deniega el permiso.
+- **ReminderService — `services/ReminderService.js`:** valida y persiste recordatorios en `localStorage["nexa.reminders.v1"]`; también lista, elimina y detecta los vencidos. La alerta de un vencimiento se coordina a través de NexaCore.
 
-NexaCore adapta su frase y animación a la condición observada: cielo despejado, nubes, lluvia, nieve, niebla o tormenta. Al tocar el Kraken, la respuesta simulada también toma en cuenta el último clima cargado. Los mensajes de reacción son temporales; no agregan estados a la máquina actual.
+La interfaz meteorológica muestra las condiciones actuales, humedad, viento y hora de actualización. Se actualiza al cargar, manualmente y cada 15 minutos. Los datos provienen de Open-Meteo, con atribución visible en la UI; antes de cualquier uso comercial se deben revisar los términos del proveedor y la licencia aplicable.
 
-Comportamiento: inactividad `awake→idle` (10 s), `idle→sleeping` (60 s). La interacción sigue siendo simulada; no hay un servicio de IA. Un recordatorio vencido con la página abierta se marca como notificado en `ReminderService` y Nexa pasa a `alert` mediante NexaCore.
-Datos: `localStorage["nexa.reminders.v1"]` = `[{id, text, when(ms), fired}]`. El texto se representa como texto, nunca como HTML.
+La interacción sigue siendo simulada y puede reaccionar al último clima cargado; no hay integración de IA. La inactividad lleva `awake → idle` después de 10 segundos y `idle → sleeping` después de 60 segundos. No se evalúan los recordatorios cuando la página está cerrada.
+
+La app debe servirse por HTTP/HTTPS para que el navegador resuelva los imports ES; abrir `index.html` directamente mediante `file://` no es compatible de forma consistente con módulos.

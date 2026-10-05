@@ -1,5 +1,8 @@
 "use strict";
 
+import { ReminderService } from "../services/ReminderService.js";
+import { WeatherService } from "../services/WeatherService.js";
+
 function copyReminder(reminder) {
   return reminder ? {
     id: reminder.id,
@@ -242,4 +245,4 @@ const NexaCore = {
   },
 };
 
-window.NexaCore = NexaCore;
+export { NexaCore };

@@ -68,4 +68,4 @@ const ReminderService = {
   },
 };
 
-window.ReminderService = ReminderService;
+export { ReminderService };
