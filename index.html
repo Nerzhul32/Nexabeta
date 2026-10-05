@@ -32,11 +32,21 @@
   </section>
 
   <section class="panel weather">
-    <div class="label">clima</div>
+    <div class="weather-head">
+      <div class="label">clima</div>
+      <button class="wx-refresh" id="wxRefresh" type="button" aria-label="Actualizar clima" title="Actualizar clima">↻</button>
+    </div>
     <div class="wx-row">
       <span class="wx-temp" id="wxTemp">--°C</span>
       <span class="wx-info"><span id="wxCond">--</span><br><small id="wxCity">--</small></span>
     </div>
+    <div class="wx-details">
+      <span id="wxHumidity">humedad --%</span>
+      <span id="wxWind">viento --</span>
+    </div>
+    <div class="wx-status" id="wxStatus" role="status" aria-live="polite">Consultando el clima...</div>
+    <div class="wx-privacy">Si permites la ubicación, sus coordenadas se consultan en Open-Meteo.</div>
+    <a class="wx-attribution" href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Datos meteorológicos: Open-Meteo</a>
   </section>
 
   <section class="panel reminders">
