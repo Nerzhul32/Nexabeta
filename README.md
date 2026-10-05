@@ -1,4 +1,4 @@
-# Nexa Web v0.1
+# Nexabeta - Nexa Web v0.1
 Primer prototipo de **Nexa**, un AI Companion (Kraken pixel-art morado) que luego será un dispositivo ESP32.
 
 **Ejecutar:** abre `index.html` en el navegador (doble clic). Para probar en el teléfono, sirve la carpeta en tu red local: `python3 -m http.server 8000` y abre `http://IP-DEL-PC:8000`.
