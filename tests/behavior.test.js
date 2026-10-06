@@ -109,6 +109,28 @@ test("ResponseEngine varies responses and avoids an immediate repeat", () => {
   assert.notEqual(first.message, second.message);
 });
 
+test("daily greeting shares useful weather advice and the next reminder", () => {
+  const now = atHour(10);
+  const response = ResponseEngine.respond("first_interaction_today", {
+    timestamp: now,
+    weather: {
+      code: 61,
+      temp: 12,
+      wind: 8,
+      condition: "Lluvia ligera",
+      city: "Villarrica",
+    },
+    upcomingReminders: [{
+      text: "Llamar al médico",
+      when: now + 5 * 60_000,
+    }],
+  });
+
+  assert.match(response.message, /12°C y lluvia ligera/i);
+  assert.match(response.message, /paraguas/i);
+  assert.match(response.message, /En 5 min: «Llamar al médico»/);
+});
+
 test("MoodEngine applies mood changes and cooldowns, while honoring due reminders", () => {
   const now = atHour(23);
   const first = MoodEngine.update({
@@ -158,6 +180,7 @@ test("NexaCore wakes, varies repeated interactions, recognizes returns, and aler
   t.after(() => {
     clearTimeout(NexaCore.timers.rest);
     clearTimeout(NexaCore.timers.think);
+    clearTimeout(NexaCore.timers.speech);
     clearInterval(NexaCore.timers.activity);
     NexaCore.timers = {};
   });
@@ -224,4 +247,20 @@ test("NexaCore wakes, varies repeated interactions, recognizes returns, and aler
   NexaCore.tick(base + 10 * 60_000);
   assert.equal(NexaCore.personality.idleStage, "long");
   assert.equal(NexaCore.mood, "sleepy");
+
+  NexaCore.set("sleeping", "Zzz...");
+  assert.equal(NexaCore.message, "");
+  assert.equal(NexaCore.effect, "");
+  NexaCore.personality.lastInteraction = base - 50_000;
+  NexaCore.personality.idleStage = null;
+  NexaCore.personality.lastVisibleEventAt = base - 20 * 60_000;
+  const originalRandom = Math.random;
+  Math.random = () => 0;
+  try {
+    NexaCore.tick(base);
+  } finally {
+    Math.random = originalRandom;
+  }
+  assert.equal(NexaCore.state, "sleeping");
+  assert.equal(NexaCore.message, "");
 });

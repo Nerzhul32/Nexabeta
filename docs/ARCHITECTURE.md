@@ -28,7 +28,7 @@ evento → contexto → mood → comportamiento → respuesta → state/effect �
 
 Los eventos de usuario pasan por `NexaCore.interact()`. Las actualizaciones de clima y recordatorios también llegan al núcleo desde sus servicios; los motores reciben datos y no conocen el DOM. Mood describe la personalidad y no sustituye el state que controla las animaciones existentes.
 
-La actividad se cuenta en una ventana corta para modular interacciones consecutivas. La inactividad se evalúa en tramos corto, medio y largo; puede cambiar el mood y, con probabilidad baja y cooldown, producir un mensaje espontáneo. Las respuestas y reacciones al clima también respetan cooldowns. Los cambios de periodo actualizan el mood sin interrumpir al usuario.
+La actividad se cuenta en una ventana corta para modular interacciones consecutivas. La primera interacción del día incorpora, si están disponibles, el clima actual, una sugerencia práctica y el próximo recordatorio cercano. La inactividad puede cambiar el mood y producir comentarios ocasionales solo mientras Nexa está despierta; nunca habla ni muestra efectos de texto cuando duerme. Cada diálogo desaparece automáticamente tras unos segundos y el cuadro no ocupa espacio cuando está vacío. Las respuestas y reacciones al clima también respetan cooldowns. Los cambios de periodo actualizan el mood sin interrumpir al usuario.
 
 Los recordatorios vencidos mantienen el state `alert`; los próximos se anuncian una sola vez por recordatorio cuando entran en la ventana de 15 minutos. La app no puede evaluar recordatorios mientras está cerrada.
 

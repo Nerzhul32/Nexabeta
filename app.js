@@ -4,12 +4,14 @@ import { NexaCore } from "./core/NexaCore.js";
 
 const $ = id => document.getElementById(id);
 const fmtWhen = ts => new Date(ts).toLocaleString("es-CL", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-const KRAKEN_FX = { sleeping: "z Z", thinking: "...", alert: "!", happy: "♥" };
+const KRAKEN_FX = { thinking: "...", alert: "!", happy: "♥" };
 
 function renderState(state, text, effect) {
   $("kraken").dataset.state = state;
   $("bubble").textContent = text;
-  $("fx").textContent = effect || KRAKEN_FX[state] || "";
+  $("bubble").hidden = !text;
+  $("fx").textContent = state === "sleeping" ? "" : effect || KRAKEN_FX[state] || "";
+  $("interactBtn").textContent = state === "sleeping" ? "[ DESPIERTA ]" : "[ HABLEMOS ]";
 }
 
 function renderClock() {

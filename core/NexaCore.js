@@ -13,6 +13,7 @@ const IDLE_SHORT_AFTER = 45_000;
 const IDLE_MEDIUM_AFTER = 3 * 60_000;
 const IDLE_LONG_AFTER = 10 * 60_000;
 const SPEECH_COOLDOWN = 8 * 60_000;
+const SPEECH_DURATION = 7_000;
 const WEATHER_COOLDOWN = 20 * 60_000;
 
 function copyReminder(reminder) {
@@ -96,8 +97,8 @@ const NexaCore = {
   timers: {},
   IDLE_AFTER: 10_000,
   SLEEP_AFTER: 60_000,
-  message: "Zzz....",
-  effect: "z Z",
+  message: "",
+  effect: "",
   weather: null,
   weatherPromise: null,
   weatherRefreshAt: 0,
@@ -106,7 +107,7 @@ const NexaCore = {
   WEATHER_REFRESH_INTERVAL: 15 * 60_000,
 
   effects: {
-    sleeping: ["z Z"],
+    sleeping: [""],
     awake: ["✦", "♪", "¡"],
     thinking: ["...", "?", "✧"],
     happy: ["♥", "✦", "♪", "★", "♡", "!"],
@@ -146,7 +147,9 @@ const NexaCore = {
     }
     clearTimeout(this.timers.weatherReaction);
     clearTimeout(this.timers.think);
+    clearTimeout(this.timers.speech);
     this.timers.think = null;
+    this.timers.speech = null;
     if (meta.action !== undefined) {
       this.context.lastAction = meta.action;
       this.personality.lastAction = meta.action;
@@ -154,10 +157,17 @@ const NexaCore = {
     }
 
     this.state = state;
-    if (message !== undefined) this.message = message;
+    this.message = state === "sleeping" || message === undefined ? "" : message;
     const effects = this.effects[state] || [""];
     this.effect = effects[Math.floor(Math.random() * effects.length)];
     this.notify();
+    if (this.message) {
+      this.timers.speech = setTimeout(() => {
+        this.timers.speech = null;
+        this.message = "";
+        this.notify();
+      }, SPEECH_DURATION);
+    }
     this.scheduleRest();
   },
   getState() {
@@ -201,7 +211,8 @@ const NexaCore = {
     this.personality.moodChangedAt = moodResult.changedAt;
 
     const behavior = BehaviorEngine.decide(event, context);
-    if (behavior && speak) {
+    if (behavior && speak && (this.state !== "sleeping"
+      || event === "REMINDER_DUE" || event === "USER_INTERACTION")) {
       const response = ResponseEngine.respond(behavior, context, {
         lastResponse: this.personality.lastResponse,
         lastByBehavior: this.personality.lastByBehavior,

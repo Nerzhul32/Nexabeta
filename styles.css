@@ -27,6 +27,7 @@ body::after{ /* scanlines */
   border:2px solid var(--line);background:var(--panel);position:relative;
   box-shadow:4px 4px 0 #031116;
 }
+.bubble:not([hidden]){animation:bubble-in .18s ease-out}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-9px;width:10px;height:10px;
   background:var(--panel);border-right:2px solid var(--line);border-bottom:2px solid var(--line);
   transform:translateX(-50%) rotate(45deg)}
@@ -46,6 +47,7 @@ body::after{ /* scanlines */
   text-shadow:0 0 8px rgba(232,201,144,.5);
   animation:effect-sparkle 1.8s ease-in-out infinite alternate
 }
+#fx:empty::after{content:none}
 /* Estados del Kraken */
 .kraken[data-state=idle]{animation:float 4s ease-in-out infinite}
 .kraken[data-state=awake]{animation:float 2s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(199,125,255,.7)) brightness(1.1)}
@@ -58,10 +60,11 @@ body::after{ /* scanlines */
 @keyframes hop{40%{transform:translateY(-18px) scaleY(1.04)}70%{transform:translateY(0) scaleY(.96)}}
 @keyframes breathe{50%{transform:scale(1.02,.98)}}
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes bubble-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @keyframes blink{50%{opacity:0}}
 @keyframes effect-float{to{transform:translate(5px,-8px) rotate(8deg)}}
 @keyframes effect-sparkle{to{transform:translate(-3px,-5px) scale(.75);opacity:.45}}
-@media (prefers-reduced-motion:reduce){.kraken,.logo i,.fx,.fx::after{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.kraken,.logo i,.fx,.fx::after,.bubble{animation:none!important}}
 
 .btn{font:inherit;color:var(--text);background:var(--panel);border:2px solid var(--purple);
   padding:10px 16px;cursor:pointer;box-shadow:3px 3px 0 #031116}

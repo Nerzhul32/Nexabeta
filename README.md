@@ -2,7 +2,7 @@
 
 Nexa es un Kraken pixel-art interactivo que funciona en el navegador, sin backend, frameworks ni servicios de IA. Esta etapa convierte la interacción simulada en un **Living Companion**: sus respuestas varían según la hora, la actividad reciente, el ánimo, el clima y los recordatorios.
 
-**Incluye:** interfaz responsive, seis estados visuales, personalidad con siete moods, reloj, clima de Open-Meteo con fallback de Villarrica, recordatorios en `localStorage` y comportamiento contextual con respuestas en español. La app no requiere instalación de dependencias.
+**Incluye:** interfaz responsive, seis estados visuales, personalidad con siete moods, reloj, clima de Open-Meteo con fallback de Villarrica, recordatorios en `localStorage` y respuestas contextuales en español. Nexa comparte el clima y el siguiente recordatorio al saludar, ofrece sugerencias prácticas y oculta el diálogo al terminar; mientras duerme no habla ni muestra efectos de texto. La app no requiere instalación de dependencias.
 
 ## Ejecutar
 

@@ -1,5 +1,7 @@
 "use strict";
 
+import { BehaviorEngine } from "./BehaviorEngine.js";
+
 const RESPONSES = {
   alert_acknowledged: ["Anotado. Ya está bajo control.", "Recibido; no se me escapan los pendientes.", "Listo. Una cosa menos en la lista."],
   interaction_while_sleeping: ["¿Eh? Ya estoy despierta. ¿Qué pasó?", "Cinco tentáculos más... bueno, ya voy.", "Me estaba quedando dormida. Cuéntame."],
@@ -28,6 +30,31 @@ const RESPONSES = {
   idle_long: ["Me estaba quedando dormida; avísame cuando vuelvas.", "Llevamos un buen rato en calma. Zzz... casi.", "Pausa larga. Aquí estaré cuando me necesites."],
 };
 
+function dailyBriefing(context) {
+  const details = [];
+  const weather = context.weather;
+  if (weather && Number.isFinite(weather.temp) && weather.condition) {
+    const city = weather.city ? ` en ${weather.city}` : "";
+    let advice = "";
+    switch (BehaviorEngine.weatherBehavior(weather)) {
+      case "weather_rain": advice = "Lleva paraguas si sales."; break;
+      case "weather_hot": advice = "Recuerda hidratarte."; break;
+      case "weather_cold": advice = "Abrígate si sales."; break;
+      case "weather_windy": advice = "Considera una capa extra si sales."; break;
+      case "weather_clear": advice = "Buen momento para dar un paseo si te apetece."; break;
+      default: break;
+    }
+    details.push(`Ahora${city}: ${weather.temp}°C y ${weather.condition.toLocaleLowerCase("es-CL")}.${advice ? ` ${advice}` : ""}`);
+  }
+
+  const nextReminder = context.upcomingReminders && context.upcomingReminders[0];
+  if (nextReminder) {
+    const minutes = Math.ceil((nextReminder.when - context.timestamp) / 60_000);
+    details.push(`En ${minutes} min: «${nextReminder.text}».`);
+  }
+  return details;
+}
+
 const ResponseEngine = {
   respond(behavior, context = {}, memory = {}) {
     const choices = RESPONSES[behavior];
@@ -46,6 +73,10 @@ const ResponseEngine = {
       message = `${template} «${context.lastReminder.text}»`;
     } else if (behavior.startsWith("weather_") && context.weather) {
       message += ` ${context.weather.temp}°C, ${context.weather.condition.toLowerCase()}.`;
+    }
+    if (behavior === "first_interaction_today") {
+      const details = dailyBriefing(context);
+      if (details.length) message += ` ${details.join(" ")}`;
     }
 
     return {
